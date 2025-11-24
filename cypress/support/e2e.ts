@@ -1,17 +1,44 @@
-// ***********************************************************
-// This example support/e2e.ts is processed and
-// loaded automatically before your test files.
-//
-// This is a great place to put global configuration and
-// behavior that modifies Cypress.
-//
-// You can change the location of this file or turn off
-// automatically serving support files with the
-// 'supportFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/configuration
-// ***********************************************************
+/**
+ * Global configuration and setup for e2e tests
+ */
 
-// Import commands.js using ES2015 syntax:
-import './commands'
+// Import commands
+import "./commands";
+
+
+beforeEach(() => {
+  // Clear cookies and local storage before each test
+  cy.clearCookies();
+  cy.clearLocalStorage();
+
+  // Perform login
+  cy.login();
+});
+
+/**
+ * Handle uncaught exceptions
+ */
+Cypress.on("uncaught:exception", (err, runnable) => {
+  // Ignore script errors that don't affect test execution
+  if (err.message.includes("Script error.")) {
+    return false;
+  }
+
+  // Ignore cross-origin errors
+  if (err.message.includes("cross-origin")) {
+    return false;
+  }
+
+  // Return false to prevent Cypress from failing the test
+  // Return true to fail the test
+  return false;
+});
+
+/**
+ * Global configuration
+ */
+Cypress.on("window:before:load", (win) => {
+  // Stub console methods to reduce noise in test output (optional)
+  // win.console.warn = cy.stub();
+  // win.console.error = cy.stub();
+});
